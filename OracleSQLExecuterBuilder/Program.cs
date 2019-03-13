@@ -34,6 +34,13 @@ namespace OracleSQLExecuterBuilder
             File.WriteAllText(executerPath, executer, Encoding.Default);
 
             Console.WriteLine("导出完成，输入任意键结束程序...");
+
+            var noneSQLFile = sqlFiles.Where(sqlfile => sqlfile.DataBase == "NONE").ToList();
+            if (noneSQLFile.Count > 0)
+            {
+                Console.Write($"\n小提示：\n发现 {noneSQLFile.Count} 个名称不符合规范的SQL文件：\n\t{string.Join("\n\t", noneSQLFile.Select(sql => sql.RelationalPath))}");
+            }
+
             Console.ReadLine();
         }
 
