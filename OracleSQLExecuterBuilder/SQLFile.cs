@@ -27,6 +27,7 @@ namespace OracleSQLExecuterBuilder
         /// <param name="sqlRelationalPath"></param>
         public SQLFile(string sqlRelationalPath)
         {
+            this.FileName = Path.GetFileName(sqlRelationalPath);
             this.Extention = Path.GetExtension(sqlRelationalPath).ToUpper();
             this.RelationalPath = sqlRelationalPath;
             string[] elements = Path.GetFileName(sqlRelationalPath).Split(new[] { '_' }, 3);
@@ -51,6 +52,11 @@ namespace OracleSQLExecuterBuilder
         /// Gets or sets 数据库
         /// </summary>
         public string DataBase { get; protected set; }
+
+        /// <summary>
+        /// Gets or sets 文件名称
+        /// </summary>
+        public string FileName { get; protected set; }
 
         /// <summary>
         /// Gets or sets 扩展名

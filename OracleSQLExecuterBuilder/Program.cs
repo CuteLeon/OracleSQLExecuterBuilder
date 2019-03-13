@@ -23,6 +23,7 @@ namespace OracleSQLExecuterBuilder
                         sqlFile.Extention == ".SPC" ||
                         sqlFile.Extention == ".FNC" ||
                         sqlFile.Extention == ".TRG")
+                .OrderBy(sqlfile => new Tuple<string, string>(sqlfile.RelationalPath, sqlfile.FileName))
                 .ToList();
             Console.WriteLine($"SQL文件：{sqlFiles.Count} 个");
 
