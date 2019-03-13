@@ -31,7 +31,7 @@ namespace OracleSQLExecuterBuilder
 
             string executerPath = Path.Combine(currentDir, $"SQLExecuter_{DateTime.Now.ToString("yyyyMMddHHmmssfff")}.sql");
             Console.WriteLine($"正在导出到文件：{executerPath}");
-            File.WriteAllText(executerPath, executer);
+            File.WriteAllText(executerPath, executer, Encoding.Default);
 
             Console.WriteLine("导出完成，输入任意键结束程序...");
             Console.ReadLine();
