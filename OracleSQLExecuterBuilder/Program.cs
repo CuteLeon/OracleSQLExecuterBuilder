@@ -61,8 +61,6 @@ namespace OracleSQLExecuterBuilder
             executerBuilder.AppendLine("define xir_trdexh_pwd = ''");
             executerBuilder.AppendLine("define xir_trdacc_pwd = ''");
             executerBuilder.AppendLine("define xir_trdd_pwd = ''");
-            executerBuilder.AppendLine("--数据库连接，如 191.168.0.63/xir63");
-            executerBuilder.AppendLine("define xir_tns = ''");
             executerBuilder.AppendLine();
             executerBuilder.AppendLine("set feedback off");
             executerBuilder.AppendLine("set define on");
