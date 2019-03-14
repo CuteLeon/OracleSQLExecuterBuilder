@@ -109,7 +109,7 @@ namespace OracleSQLExecuterBuilder
 
             void AppendConnectCommand(string database, string password)
             {
-                executerBuilder.AppendLine($"connect {database}/&{password}@&xir_tns");
+                executerBuilder.AppendLine($"connect {database}/&{password}@&_CONNECT_IDENTIFIER");
                 executerBuilder.AppendLine();
             }
 
