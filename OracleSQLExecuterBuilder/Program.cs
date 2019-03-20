@@ -63,7 +63,7 @@ namespace OracleSQLExecuterBuilder
             executerBuilder.AppendLine("define xir_trdd_pwd = ''");
             executerBuilder.AppendLine();
             executerBuilder.AppendLine("set feedback off");
-            executerBuilder.AppendLine("set define on");
+            executerBuilder.AppendLine("set define off");
             executerBuilder.AppendLine("SET SQLBLANKLINES ON");
             executerBuilder.AppendLine("WHENEVER SQLERROR EXIT SQL.SQLCODE ROLLBACK;");
             executerBuilder.AppendLine();
@@ -107,7 +107,9 @@ namespace OracleSQLExecuterBuilder
 
             void AppendConnectCommand(string database, string password)
             {
+                executerBuilder.AppendLine("set define on");
                 executerBuilder.AppendLine($"connect {database}/&{password}@&_CONNECT_IDENTIFIER");
+                executerBuilder.AppendLine("set define off");
                 executerBuilder.AppendLine();
             }
 
