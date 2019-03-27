@@ -6,9 +6,9 @@ using System.Text;
 
 namespace OracleSQLExecuterBuilder
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             string currentDir = AppDomain.CurrentDomain.BaseDirectory;
             int currentDirLength = currentDir.Length;
@@ -23,8 +23,9 @@ namespace OracleSQLExecuterBuilder
                         sqlFile.Extention == ".SPC" ||
                         sqlFile.Extention == ".FNC" ||
                         sqlFile.Extention == ".TRG")
-                .OrderBy(sqlfile => new Tuple<string, string>(sqlfile.RelationalPath, sqlfile.FileName))
+                .OrderBy(sqlfile => sqlfile, new SQLFileComparer())
                 .ToList();
+
             Console.WriteLine($"SQL文件：{sqlFiles.Count} 个");
 
             string executer = BuildSQLExecuter(sqlFiles);
