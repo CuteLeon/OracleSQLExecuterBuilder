@@ -31,6 +31,8 @@ namespace OracleSQLExecuterBuilder
         /// <returns></returns>
         public int Compare(SQLFile current, SQLFile target)
         {
+            /* SQLFile 排序优先级：APP>MD>TRD>TRD_???>子目录[.子目录]*>根目录>脚本索引序号
+             */
             if (current == null)
             {
                 return target == null ? AreEqual : TargetIsBigger;
