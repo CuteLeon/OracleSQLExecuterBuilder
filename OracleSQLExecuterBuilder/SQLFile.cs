@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.ComponentModel;
 using System.IO;
 
 namespace OracleSQLExecuterBuilder
@@ -9,17 +10,58 @@ namespace OracleSQLExecuterBuilder
     public class SQLFile
     {
         /// <summary>
-        /// 数据库字典
+        /// 数据库
         /// </summary>
-        public static Dictionary<string, string> DataBases = new Dictionary<string, string>()
+        public enum Databases
         {
-            { "APP", "XIR_APP" },
-            { "MD", "XIR_MD" },
-            { "TRD", "XIR_TRD" },
-            { "TRDEXH", "XIR_TRD_EXH" },
-            { "TRDACC", "XIR_TRD_ACC" },
-            { "TRDD", "XIR_TRD_D" },
-        };
+            /// <summary>
+            /// None
+            /// </summary>
+            [AmbientValue("None")]
+            None = 0,
+
+            /// <summary>
+            /// XIR_APP
+            /// </summary>
+            [AmbientValue("XIR_APP")]
+            APP = 1,
+
+            /// <summary>
+            /// XIR_MD
+            /// </summary>
+            [AmbientValue("XIR_MD")]
+            MD = 2,
+
+            /// <summary>
+            /// XIR_TRD
+            /// </summary>
+            [AmbientValue("XIR_TRD")]
+            TRD = 3,
+
+            /// <summary>
+            /// XIR_TRD_EXH
+            /// </summary>
+            [AmbientValue("XIR_TRD_EXH")]
+            TRDEXH = 4,
+
+            /// <summary>
+            /// XIR_TRD_ACC
+            /// </summary>
+            [AmbientValue("XIR_TRD_ACC")]
+            TRDACC = 5,
+
+            /// <summary>
+            /// XIR_TRD_D
+            /// </summary>
+            [AmbientValue("XIR_TRD_D")]
+            TRDD = 6,
+
+            /// <summary>
+            /// XIR_TRD_DFZQ
+            /// </summary>
+            [AmbientValue("XIR_TRD_DFZQ")]
+            TRDDFZQ = 7,
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SQLFile"/> class.
@@ -35,12 +77,12 @@ namespace OracleSQLExecuterBuilder
             if (elements.Length == 3)
             {
                 this.Index = int.TryParse(elements[0].ToUpper(), out int index) ? index : 0;
-                this.DataBase = DataBases.TryGetValue(elements[1], out string database) ? database : "NONE";
+                this.DataBase = Enum.TryParse(elements[1], out Databases database) ? database : Databases.None;
             }
             else
             {
                 this.Index = 0;
-                this.DataBase = "NONE";
+                this.DataBase = Databases.None;
             }
         }
 
@@ -62,7 +104,7 @@ namespace OracleSQLExecuterBuilder
         /// <summary>
         /// Gets or sets 数据库
         /// </summary>
-        public string DataBase { get; protected set; }
+        public Databases DataBase { get; protected set; }
 
         /// <summary>
         /// Gets or sets 文件名称

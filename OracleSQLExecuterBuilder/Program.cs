@@ -36,7 +36,7 @@ namespace OracleSQLExecuterBuilder
 
             Console.WriteLine("导出完成，输入任意键结束程序...");
 
-            var noneSQLFile = sqlFiles.Where(sqlfile => sqlfile.DataBase == "NONE").ToList();
+            var noneSQLFile = sqlFiles.Where(sqlfile => sqlfile.DataBase == SQLFile.Databases.None).ToList();
             if (noneSQLFile.Count > 0)
             {
                 Console.Write($"\n小提示：\n发现 {noneSQLFile.Count} 个名称不符合规范的SQL文件：\n\t{string.Join("\n\t", noneSQLFile.Select(sql => sql.RelationalPath))}");
@@ -56,12 +56,41 @@ namespace OracleSQLExecuterBuilder
             executerBuilder.AppendLine($"spool ./_Update_{DateTime.Now.ToString("yyyyMMddHHmmss")}.log");
             executerBuilder.AppendLine();
             executerBuilder.AppendLine("--登录密码");
-            executerBuilder.AppendLine("define xir_app_pwd = ''");
-            executerBuilder.AppendLine("define xir_md_pwd = ''");
-            executerBuilder.AppendLine("define xir_trd_pwd = ''");
-            executerBuilder.AppendLine("define xir_trdexh_pwd = ''");
-            executerBuilder.AppendLine("define xir_trdacc_pwd = ''");
-            executerBuilder.AppendLine("define xir_trdd_pwd = ''");
+            if (sqlFiles.Any(sqlfile => sqlfile.DataBase == SQLFile.Databases.APP))
+            {
+                executerBuilder.AppendLine("define xir_app_pwd = ''");
+            }
+
+            if (sqlFiles.Any(sqlfile => sqlfile.DataBase == SQLFile.Databases.MD))
+            {
+                executerBuilder.AppendLine("define xir_md_pwd = ''");
+            }
+
+            if (sqlFiles.Any(sqlfile => sqlfile.DataBase == SQLFile.Databases.TRD))
+            {
+                executerBuilder.AppendLine("define xir_trd_pwd = ''");
+            }
+
+            if (sqlFiles.Any(sqlfile => sqlfile.DataBase == SQLFile.Databases.TRDEXH))
+            {
+                executerBuilder.AppendLine("define xir_trdexh_pwd = ''");
+            }
+
+            if (sqlFiles.Any(sqlfile => sqlfile.DataBase == SQLFile.Databases.TRDACC))
+            {
+                executerBuilder.AppendLine("define xir_trdacc_pwd = ''");
+            }
+
+            if (sqlFiles.Any(sqlfile => sqlfile.DataBase == SQLFile.Databases.TRDD))
+            {
+                executerBuilder.AppendLine("define xir_trdd_pwd = ''");
+            }
+
+            if (sqlFiles.Any(sqlfile => sqlfile.DataBase == SQLFile.Databases.TRDDFZQ))
+            {
+                executerBuilder.AppendLine("define xir_trddfzq_pwd = ''");
+            }
+
             executerBuilder.AppendLine();
             executerBuilder.AppendLine("set feedback off");
             executerBuilder.AppendLine("set define off");
@@ -71,25 +100,26 @@ namespace OracleSQLExecuterBuilder
 
             List<SQLFile> sqlFilesOfDatabase = null;
 
-            foreach (Tuple<string, string> database in new[]
-            {
-                new Tuple<string,string>("XIR_APP", "xir_app_pwd"),
-                new Tuple<string,string>("XIR_MD", "xir_md_pwd"),
-                new Tuple<string,string>("XIR_TRD", "xir_trd_pwd"),
-                new Tuple<string,string>("XIR_TRD_EXH", "xir_trdexh_pwd"),
-                new Tuple<string,string>("XIR_TRD_ACC", "xir_trdacc_pwd"),
-                new Tuple<string,string>("XIR_TRD_D", "xir_trdd_pwd"),
+            foreach (Tuple<SQLFile.Databases, string> database in new[]
+                {
+                    new Tuple<SQLFile.Databases,string> (SQLFile.Databases.APP, "xir_app_pwd"),
+                    new Tuple<SQLFile.Databases,string> (SQLFile.Databases.MD, "xir_md_pwd"),
+                    new Tuple<SQLFile.Databases,string> (SQLFile.Databases.TRD, "xir_trd_pwd"),
+                    new Tuple<SQLFile.Databases,string> (SQLFile.Databases.TRDEXH, "xir_trdexh_pwd"),
+                    new Tuple<SQLFile.Databases,string> (SQLFile.Databases.TRDACC, "xir_trdacc_pwd"),
+                    new Tuple<SQLFile.Databases,string> (SQLFile.Databases.TRDD, "xir_trdd_pwd"),
+                    new Tuple<SQLFile.Databases,string> (SQLFile.Databases.TRDDFZQ, "xir_trddfzq_pwd"),
             })
             {
                 sqlFilesOfDatabase = sqlFiles.Where(sqlFile => sqlFile.DataBase == database.Item1).ToList();
                 if (sqlFilesOfDatabase.Count > 0)
                 {
-                    Console.WriteLine($"正在写入 {database.Item1} 数据库的 {sqlFilesOfDatabase.Count} 个脚本文件...");
-
-                    AppendPrompt($"登录数据库： {database.Item1}");
-                    AppendConnectCommand(database.Item1, database.Item2);
-                    executerBuilder.AppendLine($"-- database: {database.Item1}");
-                    AppendPrompt($"执行数据库脚本： {database.Item1}");
+                    string dbName = database.Item1.GetAmbientValue();
+                    Console.WriteLine($"正在写入 {dbName} 数据库的 {sqlFilesOfDatabase.Count} 个脚本文件...");
+                    AppendPrompt($"登录数据库： {dbName}");
+                    AppendConnectCommand(dbName, database.Item2);
+                    executerBuilder.AppendLine($"-- database: {dbName}");
+                    AppendPrompt($"执行数据库脚本： {dbName}");
                     sqlFilesOfDatabase.ForEach(sql => AppendSQLFileCommand(sql));
                     AppendGrantCommand();
                     executerBuilder.AppendLine();
