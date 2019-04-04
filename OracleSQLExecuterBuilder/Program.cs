@@ -122,6 +122,7 @@ namespace OracleSQLExecuterBuilder
                     AppendPrompt($"执行数据库脚本： {dbName}");
                     sqlFilesOfDatabase.ForEach(sql => AppendSQLFileCommand(sql));
                     AppendGrantCommand();
+                    AppendRebuildIndex();
                     executerBuilder.AppendLine();
                 }
             }
@@ -211,6 +212,39 @@ BEGIN
   END LOOP;
 END;
 /");
+                executerBuilder.AppendLine();
+            }
+
+            void AppendRebuildIndex()
+            {
+                executerBuilder.Append(@"prompt
+prompt 重建索引
+prompt ====================================
+prompt
+declare
+  cursor v_index_list is
+    SELECT 'alter Index ' || A.INDEX_NAME || ' REBUILD PARTITION ' || A. PARTITION_NAME as rebuild_sql
+      FROM USER_IND_PARTITIONS A, USER_INDEXES B
+     WHERE A.INDEX_NAME = B.INDEX_NAME
+       and b.status = 'UNUSABLE'
+    union all
+    select 'alter index ' || Index_name || ' rebuild online' as rebuild_sql
+      from User_indexes
+     where status = 'UNUSABLE'
+       and partitioned = 'NO';
+  v_index v_index_list%rowtype;
+begin
+  open v_index_list;
+  Loop
+    fetch v_index_list
+      into v_index;
+    exit when v_index_list%notfound;
+    execute immediate v_index.rebuild_sql;
+  end loop;
+  close v_index_list;
+end;
+/");
+                executerBuilder.AppendLine();
             }
 
             Console.WriteLine("脚本执行器生成完成。");
