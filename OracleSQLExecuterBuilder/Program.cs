@@ -223,10 +223,10 @@ prompt ====================================
 prompt
 declare
   cursor v_index_list is
-    SELECT 'alter Index ' || A.INDEX_NAME || ' REBUILD PARTITION ' || A. PARTITION_NAME as rebuild_sql
-      FROM USER_IND_PARTITIONS A, USER_INDEXES B
-     WHERE A.INDEX_NAME = B.INDEX_NAME
-       and b.status = 'UNUSABLE'
+    SELECT 'alter Index ' || INDEX_NAME || ' REBUILD PARTITION ' ||
+           PARTITION_NAME as rebuild_sql
+      FROM USER_IND_PARTITIONS
+     WHERE status = 'UNUSABLE'
     union all
     select 'alter index ' || Index_name || ' rebuild online' as rebuild_sql
       from User_indexes
