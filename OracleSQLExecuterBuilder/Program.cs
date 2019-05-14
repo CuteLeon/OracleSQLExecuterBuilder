@@ -18,7 +18,6 @@ namespace OracleSQLExecuterBuilder
                 .Select(sqlfile => new SQLFile(sqlfile.Substring(currentDirLength)))
                 .Where(sqlFile =>
                         sqlFile.Extention == ".SQL" ||
-                        sqlFile.Extention == ".TXT" ||
                         sqlFile.Extention == ".PCK" ||
                         sqlFile.Extention == ".PRC" ||
                         sqlFile.Extention == ".SPC" ||
