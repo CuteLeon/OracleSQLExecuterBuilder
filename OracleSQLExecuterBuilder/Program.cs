@@ -14,8 +14,12 @@ namespace OracleSQLExecuterBuilder
             int currentDirLength = currentDir.Length;
             Console.WriteLine($"扫描目录：{currentDir}");
 
-            var sqlFiles = Directory.GetFiles(currentDir, "*", SearchOption.AllDirectories)
+            var files = Directory.GetFiles(currentDir, "*", SearchOption.AllDirectories)
                 .Select(sqlfile => new SQLFile(sqlfile.Substring(currentDirLength)))
+                .Where(sqlfile => !string.IsNullOrEmpty(sqlfile.RelationalDirectory))
+                .ToList();
+
+            var sqlFiles = files
                 .Where(sqlFile =>
                         sqlFile.Extention == ".SQL" ||
                         sqlFile.Extention == ".PCK" ||
@@ -36,7 +40,12 @@ namespace OracleSQLExecuterBuilder
 
             Console.WriteLine("导出完成，输入任意键结束程序...");
 
-            var noneSQLFile = sqlFiles.Where(sqlfile => sqlfile.DataBase == SQLFile.Databases.None || sqlfile.FileName.Contains(" ")).ToList();
+            var predicate = new Func<SQLFile, bool>(sqlfile =>
+                sqlfile.DataBase == SQLFile.Databases.None ||
+                sqlfile.FileName.Contains(" ") ||
+                sqlfile.FileName.ToUpper().EndsWith(".TXT")
+            );
+            var noneSQLFile = files.Where(sqlfile => predicate(sqlfile)).ToList();
             if (noneSQLFile.Count > 0)
             {
                 Console.Write($"\n小提示：\n发现 {noneSQLFile.Count} 个名称不符合规范的SQL文件：\n\t{string.Join("\n\t", noneSQLFile.Select(sql => sql.RelationalPath))}");
