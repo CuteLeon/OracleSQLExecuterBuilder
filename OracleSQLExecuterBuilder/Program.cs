@@ -132,6 +132,12 @@ namespace OracleSQLExecuterBuilder
                     sqlFilesOfDatabase.ForEach(sql => AppendSQLFileCommand(sql));
                     AppendGrantCommand();
                     AppendRebuildIndex();
+
+                    if (database.Item1 == SQLFile.Databases.APP)
+                    {
+                        AppendUpgradeFinishTime();
+                    }
+
                     executerBuilder.AppendLine();
                 }
             }
@@ -252,6 +258,40 @@ begin
   end loop;
   close v_index_list;
 end;
+/");
+                executerBuilder.AppendLine();
+            }
+
+            void AppendUpgradeFinishTime()
+            {
+                executerBuilder.Append(@"prompt
+prompt 表TSYS_PRODUCT_INFO更新升级完成时间
+prompt ==================================================
+prompt
+DECLARE
+    V_COUNT INTEGER;
+BEGIN
+    -- 如果存在 FINISH_TIME 列，则更新升级完成时间
+    SELECT COUNT(1)
+    INTO V_COUNT
+    FROM USER_TAB_COLUMNS
+    WHERE TABLE_NAME = 'TSYS_PRODUCT_INFO' AND
+        COLUMN_NAME = 'FINISH_TIME';
+    IF V_COUNT = 1 THEN
+        EXECUTE IMMEDIATE 'update TSYS_PRODUCT_INFO
+set finish_Time = sysdate
+where upgrade_ID >=
+      (select upgrade_ID
+       from (select row_number() over(order by pversion, upgrade_id desc) as rn,
+                     upgrade_id
+              from TSYS_PRODUCT_INFO
+              where upgrade_ID > (select max(upgrade_ID) as prior_upgrade_ID
+                                  from TSYS_PRODUCT_INFO
+                                  where finish_time is not null))
+       where rn = 1)';
+        COMMIT;
+    END IF;
+END;
 /");
                 executerBuilder.AppendLine();
             }
