@@ -197,9 +197,6 @@ BEGIN
                             FROM   DUAL
                             UNION ALL
                             SELECT 'XIR_TRD_EXH' AS USER_NAME
-                            FROM   DUAL
-                            UNION ALL
-                            SELECT 'XIR_TRD_D' AS USER_NAME
                             FROM   DUAL) T2
                    WHERE  T1.OWNER <> T2.USER_NAME AND
                           (T1.OBJ_NAME, T2.USER_NAME, T1.OWNER) NOT IN
