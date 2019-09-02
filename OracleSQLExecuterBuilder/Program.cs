@@ -277,15 +277,7 @@ BEGIN
     IF V_COUNT = 1 THEN
         EXECUTE IMMEDIATE 'update TSYS_PRODUCT_INFO
 set finish_Time = sysdate
-where upgrade_ID >=
-      (select upgrade_ID
-       from (select row_number() over(order by pversion, upgrade_id desc) as rn,
-                     upgrade_id
-              from TSYS_PRODUCT_INFO
-              where upgrade_ID > (select max(upgrade_ID) as prior_upgrade_ID
-                                  from TSYS_PRODUCT_INFO
-                                  where finish_time is not null))
-       where rn = 1)';
+where upgrade_ID = (select max(upgrade_id) from TSYS_PRODUCT_INFO)';
         COMMIT;
     END IF;
 END;
