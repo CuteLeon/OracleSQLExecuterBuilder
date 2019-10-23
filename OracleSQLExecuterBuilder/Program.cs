@@ -140,8 +140,14 @@ namespace OracleSQLExecuterBuilder
                 AppendPrompt($"登录数据库： {dbName}");
                 AppendConnectCommand(dbName, database.Item2);
                 executerBuilder.AppendLine($"-- database: {dbName}");
+
                 AppendPrompt($"编译无效对象： {dbName}");
                 CompileSchema();
+
+                AppendPrompt($"当前用户无效对象： {dbName}");
+                PrintInvalidObjects();
+                AppendPrompt($"无效对象输出完毕。");
+
                 executerBuilder.AppendLine();
             }
 
@@ -291,6 +297,12 @@ END;
             void CompileSchema()
             {
                 executerBuilder.AppendLine(@"call dbms_utility.compile_schema(user);");
+                executerBuilder.AppendLine();
+            }
+
+            void PrintInvalidObjects()
+            {
+                executerBuilder.AppendLine(@"SELECT object_name, object_type FROM user_objects WHERE status = 'INVALID';");
                 executerBuilder.AppendLine();
             }
 
