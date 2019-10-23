@@ -151,7 +151,7 @@ namespace OracleSQLExecuterBuilder
                     new Tuple<SQLFile.Databases,string> (SQLFile.Databases.TRDEXH, "xir_trdexh_pwd"),
             })
             {
-                string dbName = database.GetAmbientValue();
+                string dbName = database.Item1.GetAmbientValue();
                 AppendPrompt($"登录数据库： {dbName}");
                 AppendConnectCommand(dbName, database.Item2);
                 executerBuilder.AppendLine($"-- database: {dbName}");
