@@ -142,6 +142,24 @@ namespace OracleSQLExecuterBuilder
                 }
             }
 
+            // 对必备的四个用户，每个用户执行一次 编译无效对象
+            foreach (Tuple<SQLFile.Databases, string> database in new[]
+                {
+                    new Tuple<SQLFile.Databases,string> (SQLFile.Databases.APP, "xir_app_pwd"),
+                    new Tuple<SQLFile.Databases,string> (SQLFile.Databases.MD, "xir_md_pwd"),
+                    new Tuple<SQLFile.Databases,string> (SQLFile.Databases.TRD, "xir_trd_pwd"),
+                    new Tuple<SQLFile.Databases,string> (SQLFile.Databases.TRDEXH, "xir_trdexh_pwd"),
+            })
+            {
+                string dbName = database.GetAmbientValue();
+                AppendPrompt($"登录数据库： {dbName}");
+                AppendConnectCommand(dbName, database.Item2);
+                executerBuilder.AppendLine($"-- database: {dbName}");
+                AppendPrompt($"编译无效对象： {dbName}");
+                CompileSchema();
+                executerBuilder.AppendLine();
+            }
+
             executerBuilder.AppendLine("set feedback on");
             executerBuilder.AppendLine("set define on");
             executerBuilder.AppendLine("SET SQLBLANKLINES OFF");
@@ -282,6 +300,12 @@ where upgrade_ID = (select max(upgrade_id) from TSYS_PRODUCT_INFO)';
     END IF;
 END;
 /");
+                executerBuilder.AppendLine();
+            }
+
+            void CompileSchema()
+            {
+                executerBuilder.AppendLine(@"call dbms_utility.compile_schema(user);");
                 executerBuilder.AppendLine();
             }
 
