@@ -302,7 +302,7 @@ END;
 
             void PrintInvalidObjects()
             {
-                executerBuilder.AppendLine(@"SELECT object_name, object_type FROM user_objects WHERE status = 'INVALID';");
+                executerBuilder.AppendLine(@"SELECT object_type, object_name FROM user_objects WHERE status = 'INVALID' order by object_type;");
                 executerBuilder.AppendLine();
             }
 
