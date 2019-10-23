@@ -65,25 +65,10 @@ namespace OracleSQLExecuterBuilder
             executerBuilder.AppendLine($"spool ./_Update_{DateTime.Now.ToString("yyyyMMddHHmmss")}.log");
             executerBuilder.AppendLine();
             executerBuilder.AppendLine("--登录密码");
-            if (sqlFiles.Any(sqlfile => sqlfile.DataBase == SQLFile.Databases.APP))
-            {
-                executerBuilder.AppendLine("define xir_app_pwd = ''");
-            }
-
-            if (sqlFiles.Any(sqlfile => sqlfile.DataBase == SQLFile.Databases.MD))
-            {
-                executerBuilder.AppendLine("define xir_md_pwd = ''");
-            }
-
-            if (sqlFiles.Any(sqlfile => sqlfile.DataBase == SQLFile.Databases.TRD))
-            {
-                executerBuilder.AppendLine("define xir_trd_pwd = ''");
-            }
-
-            if (sqlFiles.Any(sqlfile => sqlfile.DataBase == SQLFile.Databases.TRDEXH))
-            {
-                executerBuilder.AppendLine("define xir_trdexh_pwd = ''");
-            }
+            executerBuilder.AppendLine("define xir_app_pwd = ''");
+            executerBuilder.AppendLine("define xir_md_pwd = ''");
+            executerBuilder.AppendLine("define xir_trd_pwd = ''");
+            executerBuilder.AppendLine("define xir_trdexh_pwd = ''");
 
             if (sqlFiles.Any(sqlfile => sqlfile.DataBase == SQLFile.Databases.TRDACC))
             {
